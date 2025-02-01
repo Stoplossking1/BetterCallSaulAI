@@ -1,5 +1,5 @@
 import React from "react";
-import { Icon } from "@iconify/react"; // Install via npm: npm install --save @iconify/react
+import { Icon } from "@iconify/react";
 
 interface VoiceButtonProps {
   onClick?: () => void;
