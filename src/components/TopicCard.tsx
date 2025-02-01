@@ -21,36 +21,36 @@ interface TopicCardProps {
   icon?: React.ElementType;
   title?: string;
   description?: string;
-  url?: string; // New prop for the URL
+  url?: string;
 }
 
 const ICONS: { [key: string]: React.ElementType } = {
-  "Family Law": Users,
-  "Criminal Law": Gavel,
-  "Corporate Law": Building2,
-  "Civil Rights": Shield,
-  "Property Law": BookOpen,
-  "Constitutional Law": Scale,
-  "Contract Law": FileText,
-  General: HelpCircle,
+  "Agriculture, environment and natural resources": Users,
+  "Education": Gavel,
+  "Businesses": Building2,
+  "Family and support for individuals": Shield,
+  "Finance, income and other taxes": BookOpen,
+  "Housing and Territory": Scale,
+  "Immigration": FileText,
+  "Justice and civil status": HelpCircle,
 };
 
 const TopicCard = ({
   icon: IconComponent = HelpCircle,
   title = "Legal Topic",
   description = "Learn more about this important legal area and how it affects your rights and responsibilities.",
-  url = "#", // Default URL if none is provided
+  url = "#",
 }: TopicCardProps) => {
   const handleClick = () => {
     if (url) {
-      window.open(url, "_blank"); // Open the URL in a new tab
+      window.open(url, "_blank");
     }
   };
 
   return (
     <Card
       className="w-[280px] h-[180px] transition-all hover:shadow-lg hover:-translate-y-1 bg-white cursor-pointer"
-      onClick={handleClick} // Add onClick handler
+      onClick={handleClick}
     >
       <CardHeader className="pb-2">
         <div className="flex items-center gap-2">

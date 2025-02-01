@@ -9,9 +9,9 @@ const Header = ({}: HeaderProps) => {
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-2">
           <img
-            src="logo/Better-Call-Saul-AI-Logo.png" // Ensure the path is correct
+            src="logo/Better-Call-Saul-AI-Logo.png"
             alt="Legal AI Assistant Logo"
-            className="h-24 w-auto object-contain" // Increased height to h-24
+            className="h-24 w-auto object-contain"
           />
         </div>
       </div>

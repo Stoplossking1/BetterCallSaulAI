@@ -13,52 +13,52 @@ interface LegalTopicsGridProps {
 
 const defaultTopics: LegalTopic[] = [
   {
-    title: "Family Law",
+    title: "Agriculture, environment and natural resources",
     description:
-      "Divorce, child custody, spousal support, and other family-related legal matters.",
-    url: "https://www.justice.gc.ca/eng/fl-df/",
+      "Learn about laws and regulations related to agriculture, environmental protection, and natural resource management in Quebec.",
+    url: "https://www.quebec.ca/en/agriculture-environment-and-natural-resources",
   },
   {
-    title: "Criminal Law",
+    title: "Education",
     description:
-      "Understanding criminal charges, rights, and defense strategies in the Canadian justice system.",
-    url: "https://www.justice.gc.ca/eng/csj-sjc/just/",
+      "Explore legal frameworks and policies governing education, schools, and academic institutions in Quebec.",
+    url: "https://www.quebec.ca/en/education",
   },
   {
-    title: "Corporate Law",
+    title: "Businesses",
     description:
-      "Business incorporation, contracts, and regulatory compliance for companies.",
-    url: "https://www.ic.gc.ca/eic/site/cd-dgc.nsf/eng/home",
+      "Find information on business regulations, licensing, and support for entrepreneurs and self-employed workers in Quebec.",
+    url: "https://www.quebec.ca/en/businesses-and-self-employed-workers",
   },
   {
-    title: "Civil Rights",
+    title: "Family and support for individuals",
     description:
-      "Protection of individual rights, discrimination cases, and constitutional freedoms.",
-    url: "https://www.chrc-ccdp.gc.ca/eng",
+      "Access resources and legal guidance on family matters, social support, and individual assistance programs in Quebec.",
+    url: "https://www.quebec.ca/en/family-and-support-for-individuals",
   },
   {
-    title: "Property Law",
+    title: "Finance, income and other taxes",
     description:
-      "Real estate transactions, landlord-tenant disputes, and property rights.",
-    url: "https://www.justice.gc.ca/eng/fl-df/property-droit.html",
+      "Understand tax laws, financial regulations, and income-related policies in Quebec.",
+    url: "https://www.quebec.ca/en/finance-income-and-other-taxes",
   },
   {
-    title: "Constitutional Law",
+    title: "Housing and Territory",
     description:
-      "Understanding Canadian constitutional rights, government powers, and legal frameworks.",
-    url: "https://www.justice.gc.ca/eng/csj-sjc/just/07.html",
+      "Learn about housing laws, property rights, and territorial planning in Quebec.",
+    url: "https://www.quebec.ca/en/housing-territory",
   },
   {
-    title: "Contract Law",
+    title: "Immigration",
     description:
-      "Formation, enforcement, and dispute resolution for various types of contracts.",
-    url: "https://www.justice.gc.ca/eng/fl-df/contract-contrat.html",
+      "Get information on immigration laws, visa requirements, and settlement services in Quebec.",
+    url: "https://www.quebec.ca/en/immigration",
   },
   {
-    title: "General",
+    title: "Justice and civil status",
     description:
-      "General legal information and guidance for common legal questions.",
-    url: "https://www.justice.gc.ca/eng/",
+      "Explore legal systems, civil rights, and procedures related to justice and civil status in Quebec.",
+    url: "https://www.quebec.ca/en/justice-and-civil-status",
   },
 ];
 
