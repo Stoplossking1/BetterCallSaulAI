@@ -3,12 +3,17 @@ import Header from "./Header";
 import HeroSection from "./HeroSection";
 import LegalTopicsGrid from "./LegalTopicsGrid";
 import ChatButton from "./ChatButton";
+import VoiceButton from "./VoiceButton";
 
 const Home = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   const handleAskQuestion = () => {
     setIsChatOpen(true);
+  };
+
+  const handleVoiceButtonClick = () => {
+    console.log("Voice button clicked");
   };
 
   return (
@@ -18,6 +23,7 @@ const Home = () => {
         <HeroSection onAskQuestion={handleAskQuestion} />
         <LegalTopicsGrid />
       </main>
+      <VoiceButton onClick={handleVoiceButtonClick} />
       <ChatButton isOpen={isChatOpen} onOpenChange={setIsChatOpen} />
     </div>
   );
