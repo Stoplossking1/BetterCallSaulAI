@@ -1,8 +1,7 @@
 import React from "react";
 import { MapPin } from "lucide-react";
 
-interface HeaderProps {
-}
+interface HeaderProps {}
 
 const Header = ({}: HeaderProps) => {
   return (
@@ -10,11 +9,10 @@ const Header = ({}: HeaderProps) => {
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-2">
           <img
-            src="/vite.svg"
+            src="logo/Better-Call-Saul-AI-Logo.png" // Ensure the path is correct
             alt="Legal AI Assistant Logo"
-            className="h-8 w-8"
+            className="h-24 w-auto object-contain" // Increased height to h-24
           />
-          <h1 className="text-xl font-semibold hidden md:block">Better Call Saul AI</h1>
         </div>
       </div>
 
