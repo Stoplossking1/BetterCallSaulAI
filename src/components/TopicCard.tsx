@@ -48,22 +48,24 @@ const TopicCard = ({
   };
 
   return (
-    <Card
-      className="w-[280px] h-[180px] transition-all hover:shadow-lg hover:-translate-y-1 bg-white cursor-pointer"
-      onClick={handleClick}
-    >
-      <CardHeader className="pb-2">
-        <div className="flex items-center gap-2">
-          <IconComponent className="h-6 w-6 text-blue-600" />
-          <CardTitle className="text-lg">{title}</CardTitle>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <CardDescription className="text-sm text-gray-600 line-clamp-3">
-          {description}
-        </CardDescription>
-      </CardContent>
-    </Card>
+    <div className="relative">
+      <Card
+        className="w-[280px] min-h-[180px] transition-all hover:shadow-lg hover:-translate-y-1 bg-white cursor-pointer group"
+        onClick={handleClick}
+      >
+        <CardHeader className="pb-2">
+          <div className="flex items-center gap-2">
+            <IconComponent className="h-6 w-6 text-blue-600" />
+            <CardTitle className="text-lg">{title}</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <CardDescription className="text-sm text-gray-600 line-clamp-3 group-hover:line-clamp-none">
+            {description}
+          </CardDescription>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 
