@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "./ui/button";
-import { MessageCircle, Globe, Mic } from "lucide-react"; // Mic icon for recording
+import { MessageCircle, Globe, Mic } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "./ui/dialog";
-import VoiceRecorder from "./VoiceRecorder"; // Import the voice recording component
+import VoiceRecorder from "./VoiceRecorder";
 
 interface ChatButtonProps {
   isOpen?: boolean;
@@ -26,7 +26,7 @@ const ChatButton = ({ isOpen = false, onOpenChange }: ChatButtonProps) => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [language, setLanguage] = useState<"en" | "fr">("en");
-  const [isRecording, setIsRecording] = useState(false); // Track recording state
+  const [isRecording, setIsRecording] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -99,8 +99,8 @@ const ChatButton = ({ isOpen = false, onOpenChange }: ChatButtonProps) => {
   };
 
   const handleVoiceRecordingComplete = (transcribedText: string) => {
-    setMessage(transcribedText); // Set transcribed text in input field
-    setIsRecording(false); // Close recording mode after transcription
+    setMessage(transcribedText);
+    setIsRecording(false);
   };
 
   return (
@@ -164,18 +164,15 @@ const ChatButton = ({ isOpen = false, onOpenChange }: ChatButtonProps) => {
               onChange={(e) => setMessage(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
             />
-            {/* 🎤 Microphone Button */}
             <Button variant="outline" size="icon" onClick={() => setIsRecording(true)}>
               <Mic className="h-4 w-4 text-red-500" />
             </Button>
 
-            {/* 📤 Send Button */}
             <Button onClick={handleSendMessage}>
               {language === "en" ? "Send" : "Envoyer"}
             </Button>
           </div>
 
-          {/* 🎙️ Voice Recorder Dialog */}
           {isRecording && (
             <Dialog open={isRecording} onOpenChange={setIsRecording}>
               <DialogContent className="sm:max-w-[400px]">
