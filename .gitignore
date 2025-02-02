@@ -12,6 +12,8 @@ dist
 dist-ssr
 *.local
 .env
+gc-auth.json
+
 
 # Editor directories and files
 .vscode/*

@@ -12,7 +12,7 @@ app.use(express.json({ limit: "50mb" }));
 app.use(cors());
 
 // Google Cloud Speech Client
-const client = new speech.SpeechClient({
+const client = new speech.SpeechClient({ 
   keyFilename: "./gc-auth.json",
 });
 

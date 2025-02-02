@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "./ui/button";
-import { MessageCircle, Globe } from "lucide-react";
+import { MessageCircle, Globe, Mic } from "lucide-react"; // Mic icon for recording
 import {
   Dialog,
   DialogContent,
@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "./ui/dialog";
-import VoiceRecorder from "./VoiceRecorder";
+import VoiceRecorder from "./VoiceRecorder"; // Import the voice recording component
 
 interface ChatButtonProps {
   isOpen?: boolean;
@@ -25,7 +25,8 @@ const ChatButton = ({ isOpen = false, onOpenChange }: ChatButtonProps) => {
   const [open, setOpen] = useState(isOpen);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
-  const [language, setLanguage] = useState<"en" | "fr">("en"); // Language state
+  const [language, setLanguage] = useState<"en" | "fr">("en");
+  const [isRecording, setIsRecording] = useState(false); // Track recording state
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -46,43 +47,7 @@ const ChatButton = ({ isOpen = false, onOpenChange }: ChatButtonProps) => {
   };
 
   const handleLanguageToggle = async () => {
-    const newLang = language === "en" ? "fr" : "en";
-    setLanguage(newLang);
-
-    // Translate all previous messages
-    const translatedMessages = await Promise.all(
-      messages.map(async (msg) => {
-        const translatedText = await translateText(msg.text, newLang);
-        return { ...msg, text: translatedText };
-      })
-    );
-
-    setMessages(translatedMessages);
-  };
-
-  const translateText = async (text: string, targetLang: "en" | "fr") => {
-    try {
-      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
-        },
-        body: JSON.stringify({
-          model: "deepseek/deepseek-chat",
-          messages: [
-            { role: "system", content: `Translate the following text into ${targetLang === "fr" ? "French" : "English"}:` },
-            { role: "user", content: text },
-          ],
-        }),
-      });
-
-      const data = await response.json();
-      return data.choices?.[0]?.message?.content || text;
-    } catch (error) {
-      console.error("Error translating text:", error);
-      return text;
-    }
+    setLanguage(language === "en" ? "fr" : "en");
   };
 
   const handleSendMessage = async () => {
@@ -125,18 +90,17 @@ const ChatButton = ({ isOpen = false, onOpenChange }: ChatButtonProps) => {
         setMessages((prevMessages) => [...prevMessages, assistantMessage]);
       } catch (error) {
         console.error("Error fetching response from DeepSeek:", error);
-        const errorMessage: Message = {
-          id: Date.now() + 1,
-          text: "Sorry, I couldn't process your request. Please try again.",
-          sender: "assistant",
-        };
-        setMessages((prevMessages) => [...prevMessages, errorMessage]);
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { id: Date.now() + 1, text: "Error processing your request.", sender: "assistant" },
+        ]);
       }
     }
   };
 
   const handleVoiceRecordingComplete = (transcribedText: string) => {
-    setMessage(transcribedText);
+    setMessage(transcribedText); // Set transcribed text in input field
+    setIsRecording(false); // Close recording mode after transcription
   };
 
   return (
@@ -177,10 +141,7 @@ const ChatButton = ({ isOpen = false, onOpenChange }: ChatButtonProps) => {
             ) : (
               <div className="space-y-4">
                 {messages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
-                  >
+                  <div key={msg.id} className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
                     <div
                       className={`max-w-[75%] p-3 rounded-lg ${
                         msg.sender === "user" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-800"
@@ -193,6 +154,7 @@ const ChatButton = ({ isOpen = false, onOpenChange }: ChatButtonProps) => {
               </div>
             )}
           </div>
+
           <div className="flex gap-2 items-center">
             <input
               type="text"
@@ -202,11 +164,29 @@ const ChatButton = ({ isOpen = false, onOpenChange }: ChatButtonProps) => {
               onChange={(e) => setMessage(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
             />
-            <VoiceRecorder onRecordingComplete={handleVoiceRecordingComplete} />
-            <Button onClick={handleSendMessage} disabled={isLoading}>
-              Send
+            {/* 🎤 Microphone Button */}
+            <Button variant="outline" size="icon" onClick={() => setIsRecording(true)}>
+              <Mic className="h-4 w-4 text-red-500" />
+            </Button>
+
+            {/* 📤 Send Button */}
+            <Button onClick={handleSendMessage}>
+              {language === "en" ? "Send" : "Envoyer"}
             </Button>
           </div>
+
+          {/* 🎙️ Voice Recorder Dialog */}
+          {isRecording && (
+            <Dialog open={isRecording} onOpenChange={setIsRecording}>
+              <DialogContent className="sm:max-w-[400px]">
+                <DialogHeader>
+                  <DialogTitle>Voice Recording</DialogTitle>
+                  <DialogDescription>Speak and your message will be transcribed.</DialogDescription>
+                </DialogHeader>
+                <VoiceRecorder onRecordingComplete={handleVoiceRecordingComplete} />
+              </DialogContent>
+            </Dialog>
+          )}
         </DialogContent>
       </Dialog>
     </>
