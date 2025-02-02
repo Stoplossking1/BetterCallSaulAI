@@ -12,9 +12,8 @@ const VoiceButton = ({ onClick }: VoiceButtonProps) => {
   const [transcript, setTranscript] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
-  const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);  // Track current audio
+  const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
 
-  // Load animation
   useEffect(() => {
     fetch("/voiceicon.json")
       .then((response) => response.json())
@@ -22,26 +21,22 @@ const VoiceButton = ({ onClick }: VoiceButtonProps) => {
       .catch((error) => console.error("Error loading animation:", error));
   }, []);
 
-  // Close modal and stop audio playback if any
   const handleModalClose = () => {
     setModalOpen(false);
     stopRecording();
     setTranscript("");
     
-    // Stop the current audio if it's playing
     if (currentAudio) {
       currentAudio.pause();
-      setCurrentAudio(null);  // Reset current audio
+      setCurrentAudio(null);
     }
   };
 
-  // Open modal
   const handleVoiceButtonClick = () => {
     setModalOpen(true);
     if (onClick) onClick();
   };
 
-  // Start recording and connect to Deepgram
   const startRecording = async () => {
     try {
       console.log("🎤 Starting recording...");
@@ -68,7 +63,6 @@ const VoiceButton = ({ onClick }: VoiceButtonProps) => {
 
             setTranscript(newTranscript);
 
-            // Send transcript to DeepSeek (same as ChatButton)
             fetchDeepSeekResponse(newTranscript);
           } else {
             console.warn("⚠️ No transcript found in Deepgram response:", data);
@@ -97,7 +91,7 @@ const VoiceButton = ({ onClick }: VoiceButtonProps) => {
         }
       };
 
-      recorder.start(1000); // Send data every second
+      recorder.start(1000);
       console.log("⏺️ Recording started...");
       setIsRecording(true);
       setMediaRecorder(recorder);
@@ -106,14 +100,12 @@ const VoiceButton = ({ onClick }: VoiceButtonProps) => {
     }
   };
 
-  // Stop recording
   const stopRecording = () => {
     console.log("🛑 Stopping recording...");
     mediaRecorder?.stop();
     setIsRecording(false);
   };
 
-  // Fetch response from DeepSeek AI
   const fetchDeepSeekResponse = async (message: string) => {
     try {
       const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -138,24 +130,21 @@ const VoiceButton = ({ onClick }: VoiceButtonProps) => {
       const data = await response.json();
       const assistantMessage = data.choices?.[0]?.message?.content || "No response from DeepSeek.";
 
-      // Now send response to Deepgram TTS for speech output
       await fetchTextToSpeech(assistantMessage);
     } catch (error) {
       console.error("Error fetching response from DeepSeek:", error);
     }
   };
 
-  // Convert DeepSeek response to speech (TTS)
   const fetchTextToSpeech = async (text: string) => {
     try {
       console.log("Sending TTS request to Deepgram...");
       
-      // Only pass the text field
       const body = {
-        text: text,  // This should be the only required field
+        text: text,
       };
   
-      console.log("Request Payload:", JSON.stringify(body));  // Log request body for debugging
+      console.log("Request Payload:", JSON.stringify(body));
   
       const response = await fetch("https://api.deepgram.com/v1/speak", {
         method: "POST",
@@ -175,16 +164,14 @@ const VoiceButton = ({ onClick }: VoiceButtonProps) => {
       const audioBlob = await response.blob();
       const audioUrl = URL.createObjectURL(audioBlob);
   
-      // Create a new Audio instance and play it
       const audio = new Audio(audioUrl);
       audio.play();
       console.log("TTS audio played successfully.");
 
-      // Set the current audio and add event listener for when it finishes
       setCurrentAudio(audio);
       audio.onended = () => {
         console.log("TTS audio finished.");
-        setCurrentAudio(null);  // Reset current audio when finished
+        setCurrentAudio(null);
       };
     } catch (error) {
       console.error("Error with Deepgram TTS:", error);
