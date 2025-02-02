@@ -27,3 +27,4 @@ gc-auth.json
 *.sw?
 
 !node_modules/.vite
+backend/.env
