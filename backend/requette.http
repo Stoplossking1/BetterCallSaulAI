@@ -1,0 +1,13 @@
+curl -X POST -H "Content-Type: application/json" \
+    -H "Authorization: Bearer AIzaSyDcoJ9P5fM9P1ObKs6Zc1DU_OYdYwd5kh4" \
+    --data '{
+      "config": {
+        "encoding": "LINEAR16",
+        "sampleRateHertz": 16000,
+        "languageCode": "fr-FR"
+      },
+      "audio": {
+        "content": "debug_audio.wav"
+      }
+    }' \
+    https://speech.googleapis.com/v1/speech:recognize
