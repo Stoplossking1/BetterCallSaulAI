@@ -44,39 +44,34 @@ const ChatButton = ({ isOpen = false, onOpenChange }: ChatButtonProps) => {
     }
   };
 
-  const translateMessages = async () => {
-    const targetLanguage = language === "en" ? "fr" : "en";
+  const handleLanguageToggle = async () => {
     const translatedMessages = await Promise.all(
       messages.map(async (msg) => {
-        try {
-          const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
-            },
-            body: JSON.stringify({
-              model: "deepseek/deepseek-chat",
-              messages: [
-                { role: "system", content: `Translate the following text to ${targetLanguage === "fr" ? "French" : "English"}:` },
-                { role: "user", content: msg.text },
-              ],
-            }),
-          });
+        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
+          },
+          body: JSON.stringify({
+            model: "deepseek/deepseek-chat",
+            messages: [
+              { role: "system", content: `Translate the following message to ${language === "fr" ? "English" : "French"}.` },
+              { role: "user", content: msg.text },
+            ],
+          }),
+        });
 
-          if (!response.ok) {
-            throw new Error("Translation failed");
-          }
-          const data = await response.json();
-          return { ...msg, text: data.choices?.[0]?.message?.content || msg.text };
-        } catch (error) {
-          console.error("Error translating message:", error);
-          return msg;
-        }
+        const data = await response.json();
+        return {
+          ...msg,
+          text: data.choices?.[0]?.message?.content || msg.text,
+        };
       })
     );
+
     setMessages(translatedMessages);
-    setLanguage(targetLanguage);
+    setLanguage(language === "en" ? "fr" : "en");
   };
 
   const handleSendMessage = async () => {
@@ -106,7 +101,8 @@ const ChatButton = ({ isOpen = false, onOpenChange }: ChatButtonProps) => {
         });
 
         if (!response.ok) {
-          throw new Error("Failed to fetch response");
+          const errorText = await response.text();
+          throw new Error(`Failed to fetch response: ${response.status} - ${errorText}`);
         }
 
         const data = await response.json();
@@ -117,7 +113,7 @@ const ChatButton = ({ isOpen = false, onOpenChange }: ChatButtonProps) => {
         };
         setMessages((prevMessages) => [...prevMessages, assistantMessage]);
       } catch (error) {
-        console.error("Error fetching response:", error);
+        console.error("Error fetching response from DeepSeek:", error);
         setMessages((prevMessages) => [
           ...prevMessages,
           { id: Date.now() + 1, text: "Error processing your request.", sender: "assistant" },
@@ -142,13 +138,13 @@ const ChatButton = ({ isOpen = false, onOpenChange }: ChatButtonProps) => {
           <DialogHeader>
             <DialogTitle>Legal Assistant Chat</DialogTitle>
             <DialogDescription>
-              Ask any legal question related to Quebec law and get instant assistance.
+              Ask any legal question related to Quebec law and get instant assistance from our AI legal helper.
             </DialogDescription>
           </DialogHeader>
 
           <div className="flex justify-between items-center p-2">
             <span className="text-sm font-semibold">Language: {language === "en" ? "English" : "Français"}</span>
-            <Button onClick={translateMessages} className="flex items-center gap-2">
+            <Button onClick={handleLanguageToggle} className="flex items-center gap-2">
               <Globe className="h-4 w-4" />
               {language === "en" ? "Switch to French" : "Passer en anglais"}
             </Button>
@@ -157,13 +153,18 @@ const ChatButton = ({ isOpen = false, onOpenChange }: ChatButtonProps) => {
           <div className="h-[500px] bg-gray-50 rounded-md p-4 overflow-y-auto">
             {messages.length === 0 ? (
               <div className="text-center text-gray-500 mt-[180px]">
-                {language === "en" ? "Start a conversation by typing your legal question below." : "Commencez une conversation en tapant votre question juridique ci-dessous."}
+                {language === "en"
+                  ? "Start a conversation by typing your legal question below."
+                  : "Commencez une conversation en tapant votre question juridique ci-dessous."}
               </div>
             ) : (
               <div className="space-y-4">
                 {messages.map((msg) => (
                   <div key={msg.id} className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
-                    <div className={`max-w-[75%] p-3 rounded-lg ${msg.sender === "user" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-800"}`}>{msg.text}</div>
+                    <div
+                      className={`max-w-[75%] p-3 rounded-lg ${msg.sender === "user" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-800"}`}
+                      dangerouslySetInnerHTML={{ __html: msg.text }}
+                    />
                   </div>
                 ))}
                 <div ref={messagesEndRef} />
