@@ -24,7 +24,7 @@ const Home = () => {
       <main className="pt-20">
         <HeroSection onAskQuestion={handleAskQuestion} />
         <LegalTopicsGrid />
-        <DemoSection videoUrl="https://www.youtube.com/shorts/5rvt0XINiaY" />
+        <DemoSection videoUrl="https://www.youtube.com/watch?v=4vV2SARkUMI" />
         <TeamSection />
       </main>
       <VoiceButton onClick={handleVoiceButtonClick} />
