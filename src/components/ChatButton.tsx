@@ -44,41 +44,45 @@ const ChatButton = ({ isOpen = false, onOpenChange }: ChatButtonProps) => {
     }
   };
 
+  const translateText = async (text: string, targetLang: "en" | "fr") => {
+    try {
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: "deepseek/deepseek-chat",
+          messages: [{ role: "user", content: `Translate this to ${targetLang === "fr" ? "French" : "English"}: ${text}` }],
+        }),
+      });
+      const data = await response.json();
+      return data.choices?.[0]?.message?.content || text;
+    } catch (error) {
+      console.error("Translation error:", error);
+      return text;
+    }
+  };
+
   const handleLanguageToggle = async () => {
+    const newLanguage = language === "en" ? "fr" : "en";
     const translatedMessages = await Promise.all(
-      messages.map(async (msg) => {
-        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
-          },
-          body: JSON.stringify({
-            model: "deepseek/deepseek-chat",
-            messages: [
-              { role: "system", content: `Translate the following message to ${language === "fr" ? "English" : "French"}.` },
-              { role: "user", content: msg.text },
-            ],
-          }),
-        });
-
-        const data = await response.json();
-        return {
-          ...msg,
-          text: data.choices?.[0]?.message?.content || msg.text,
-        };
-      })
+      messages.map(async (msg) => ({
+        ...msg,
+        text: await translateText(msg.text, newLanguage),
+      }))
     );
-
     setMessages(translatedMessages);
-    setLanguage(language === "en" ? "fr" : "en");
+    setLanguage(newLanguage);
   };
 
   const handleSendMessage = async () => {
     if (message.trim()) {
+      const translatedMessage = await translateText(message, language);
       const newMessage: Message = {
         id: Date.now(),
-        text: message,
+        text: translatedMessage,
         sender: "user",
       };
       setMessages((prevMessages) => [...prevMessages, newMessage]);
@@ -95,15 +99,10 @@ const ChatButton = ({ isOpen = false, onOpenChange }: ChatButtonProps) => {
             model: "deepseek/deepseek-chat",
             messages: [
               { role: "system", content: `You are a helpful legal assistant specializing in Quebec law. Always respond in ${language === "fr" ? "French" : "English"}.` },
-              { role: "user", content: message },
+              { role: "user", content: translatedMessage },
             ],
           }),
         });
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`Failed to fetch response: ${response.status} - ${errorText}`);
-        }
 
         const data = await response.json();
         const assistantMessage: Message = {
@@ -138,7 +137,7 @@ const ChatButton = ({ isOpen = false, onOpenChange }: ChatButtonProps) => {
           <DialogHeader>
             <DialogTitle>Legal Assistant Chat</DialogTitle>
             <DialogDescription>
-              Ask any legal question related to Quebec law and get instant assistance from our AI legal helper.
+              Ask any legal question related to Quebec law and get instant assistance.
             </DialogDescription>
           </DialogHeader>
 
@@ -153,9 +152,7 @@ const ChatButton = ({ isOpen = false, onOpenChange }: ChatButtonProps) => {
           <div className="h-[500px] bg-gray-50 rounded-md p-4 overflow-y-auto">
             {messages.length === 0 ? (
               <div className="text-center text-gray-500 mt-[180px]">
-                {language === "en"
-                  ? "Start a conversation by typing your legal question below."
-                  : "Commencez une conversation en tapant votre question juridique ci-dessous."}
+                {language === "en" ? "Start a conversation by typing below." : "Commencez une conversation en tapant ci-dessous."}
               </div>
             ) : (
               <div className="space-y-4">
@@ -170,6 +167,18 @@ const ChatButton = ({ isOpen = false, onOpenChange }: ChatButtonProps) => {
                 <div ref={messagesEndRef} />
               </div>
             )}
+          </div>
+
+          <div className="flex gap-2 items-center">
+            <input
+              type="text"
+              placeholder="Type your question here..."
+              className="flex-1 p-2 border rounded-md"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+            />
+            <Button onClick={handleSendMessage}>Send</Button>
           </div>
         </DialogContent>
       </Dialog>
